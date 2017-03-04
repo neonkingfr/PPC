@@ -41,7 +41,8 @@ module IMMU_top(clk,rst,
 		.TLB_entry_TID(TLB_entry_TID),
 		.TLB_entry_EPN(TLB_entry_EPN),
 		.TLB_entry_PERMIS(TLB_entry_PERMIS),
-		.Hit(Hit)
+		.Hit(Hit),
+		.Exception(Exception)
 	);
 	
 	
