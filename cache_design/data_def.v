@@ -44,6 +44,10 @@
 //该字段用来选择字，在4字的情况下，该字段为2位
 `define Word_Select_Width 2
 
+//the width of byte select
+//该字段用来选择字节，在4字的情况下，该字段为2位
+`define Byte_Select_Width 2
+
 //the width of Wn ,
 //Wn字段用来控制Mux,以选择合适的数据(DI_CPU或者DI_Low)进入Cache Block
 `define Wn_Width 4

@@ -20,7 +20,7 @@ module cacheBlock(
 		input	[`En_Word_Width-1:0]		En_Word;
 		input	[`En_Byte_Width-1:0]		En_Byte;
 		input	[`Index_Width-1:0]			Index;
-		input								Wr;
+		;input								Wr;
 		input								ValidNew;
 		input								DirtyNew;
 		input	[`Cache_Block_Size-1:0]		Data_In;
