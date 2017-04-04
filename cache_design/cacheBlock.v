@@ -1,3 +1,5 @@
+`include "data_def.v"
+
 module cacheBlock(
 			clk,
 			En_Word,						//Block块内的字使能信号，用来判断选择哪个字
@@ -12,7 +14,7 @@ module cacheBlock(
 			Dirty_Out,						//从Block中读出的dirty位，用来判断是否进行过写操作
 			Valid_Out,						//从Block中读出的valid位，用来检测是否命中
 			Tag_Out,						//从Block中读出的Tag字段，用于检测是否命中
-			Data_Out,						//从Block中读出的数据，用于传回CPU或写入下一级的Memory
+			Data_Out						//从Block中读出的数据，用于传回CPU或写入下一级的Memory
 			//Rdy_Low							//当下一级Memory完成对Cache Block的写操作后，Rdy_Low
 		);
 		
@@ -20,7 +22,7 @@ module cacheBlock(
 		input	[`En_Word_Width-1:0]		En_Word;
 		input	[`En_Byte_Width-1:0]		En_Byte;
 		input	[`Index_Width-1:0]			Index;
-		;input								Wr;
+		input								Wr;
 		input								ValidNew;
 		input								DirtyNew;
 		input	[`Cache_Block_Size-1:0]		Data_In;
@@ -33,7 +35,7 @@ module cacheBlock(
 		//output								Rdy_Low;
 		
 		
-		wire	[15:0]						wea_data;
+		reg   	[15:0]						wea_data;
 		wire	[2:0]						wea_flag;
 		wire	[`flag_Tag_Size-1:0]		data_flag;
 		wire	[`flag_Tag_Size-1:0]		data_flag_out;
@@ -44,101 +46,101 @@ module cacheBlock(
 		always @(*) begin
 			//字选择
 			if(En_Word == 4'b0001 && En_Byte == 4'b1111) begin
-				wea_data = 4'h000f;
+				wea_data = 16'h000f;
 			end
 			else if (En_Word == 4'b0010 && En_Byte == 4'b1111) begin
-				wea_data = 4'h00f0;
+				wea_data = 16'h00f0;
 			end
 			else if (En_Word == 4'b0100 && En_Byte == 4'b1111) begin 
-				wea_data = 4'h0f00;
+				wea_data = 16'h0f00;
 			end
 			else if (En_Word == 4'b1000 && En_Byte == 4'b1111) begin
-				wea_data = 4'hf000;
+				wea_data = 16'hf000;
 			end
 			//半字选择
 			///En_Word == 4'b0001
 			else if (En_Word == 4'b0001 && En_Byte == 4'b0011) begin
-				wea_data = 4'h0003;
+				wea_data = 16'h0003;
 			end
 			else if (En_Word == 4'b0001 && En_Byte == 4'b1100) begin
-				wea_data = 4'h000c;
+				wea_data = 16'h000c;
 			end
 			///En_Word == 4'b0010
 			else if (En_Word == 4'b0010 && En_Byte == 4'b0011) begin
-				wea_data = 4'h0030;
+				wea_data = 16'h0030;
 			end
 			else if (En_Word == 4'b0010 && En_Byte == 4'b1100) begin
-				wea_data = 4'h00c0;
+				wea_data = 16'h00c0;
 			end
 			///En_Word == 4'b0100
 			else if (En_Word == 4'b0100 && En_Byte == 4'b0011) begin
-				wea_data = 4'h0300;
+				wea_data = 16'h0300;
 			end
 			else if (En_Word == 4'b0100 && En_Byte == 4'b1100) begin 
-				wea_data = 4'h0c00;
+				wea_data = 16'h0c00;
 			end
 			///En_Word == 4'b1000
 			else if (En_Word == 4'b1000 && En_Byte == 4'b0011) begin 
-				wea_data = 4'h3000;
+				wea_data = 16'h3000;
 			end
 			else if (En_Word == 4'b1000 && En_Byte == 4'b1100) begin 
-				wea_data = 4'hc000;
+				wea_data = 16'hc000;
 			end
 			//字节选择
 			///En_Word == 4'b0001
 			else if (En_Word == 4'b0001 && En_Byte == 4'b0001) begin 
-				wea_data = 4'h0001;
+				wea_data = 16'h0001;
 			end
 			else if (En_Word == 4'b0001 && En_Byte == 4'b0010) begin 
-				wea_data = 4'h0002;
+				wea_data = 16'h0002;
 			end
 			else if (En_Word == 4'b0001 && En_Byte == 4'b0100) begin 
-				wea_data = 4'h0004;
+				wea_data = 16'h0004;
 			end
 			else if (En_Word == 4'b0001 && En_Byte == 4'b1000) begin 
-				wea_data = 4'h0008;
+				wea_data = 16'h0008;
 			end 
 			///En_Word == 4'b0010
 			else if (En_Word == 4'b0010 && En_Byte == 4'b0001) begin 
-				wea_data = 4'h0010;
+				wea_data = 16'h0010;
 			end
 			else if (En_Word == 4'b0010 && En_Byte == 4'b0010) begin 
-				wea_data = 4'h0020;
+				wea_data = 16'h0020;
 			end
 			else if (En_Word == 4'b0010 && En_Byte == 4'b0100) begin 
-				wea_data = 4'h0040;
+				wea_data = 16'h0040;
 			end
 			else if (En_Word == 4'b0010 && En_Byte == 4'b1000) begin 
-				wea_data = 4'h0080;
+				wea_data = 16'h0080;
 			end 
 			///En_Word == 4'b0100
 			else if (En_Word == 4'b0100 && En_Byte == 4'b0001) begin 
-				wea_data = 4'h0100;
+				wea_data = 16'h0100;
 			end
 			else if (En_Word == 4'b0100 && En_Byte == 4'b0010) begin 
-				wea_data = 4'h0200;
+				wea_data = 16'h0200;
 			end
 			else if (En_Word == 4'b0100 && En_Byte == 4'b0100) begin 
-				wea_data = 4'h0400;
+				wea_data = 16'h0400;
 			end
 			else if (En_Word == 4'b0100 && En_Byte == 4'b1000) begin 
-				wea_data = 4'h0800;
+				wea_data = 16'h0800;
 			end 
 			///En_Word == 4'b1000
 			else if (En_Word == 4'b1000 && En_Byte == 4'b0001) begin 
-				wea_data = 4'h1000;
+				wea_data = 16'h1000;
 			end
 			else if (En_Word == 4'b1000 && En_Byte == 4'b0010) begin 
-				wea_data = 4'h2000;
+				wea_data = 16'h2000;
 			end
 			else if (En_Word == 4'b1000 && En_Byte == 4'b0100) begin 
-				wea_data = 4'h4000;
+				wea_data = 16'h4000;
 			end
 			else if (En_Word == 4'b1000 && En_Byte == 4'b1000) begin 
-				wea_data = 4'h8000;
+				wea_data = 16'h8000;
 			end 
 			else
-				wea_data = 4'hffff; // default value
+				wea_data = 16'hffff; // default value
 		end //end always 
 			
 		

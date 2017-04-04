@@ -1,3 +1,4 @@
+`include "data_def.v"
 /*
 ** cache的基本参数：
 **    (1)总容量为16KB，每块4个字，共128位，采用写回策略
@@ -11,7 +12,7 @@
 module cache(
 			//input
 			clk,rst,
-			Req_CPU,			//来自CPU的请求信号
+			Req_CPU,            //来自CPU的请求信号 
 			Wr_CPU,				//来自CPU的读写信号，其中为1表示是写操作，为0表示是读操作
 			A_CPU,				//来自CPU的地址信号
 			Rdy_Low,			//来自下一级Memory的准备完毕信号
@@ -30,7 +31,7 @@ module cache(
 	input									clk;
 	input									rst;
 	//input from CPU
-	input									Req_CPU；
+	input									Req_CPU;
 	input									Wr_CPU;
 	input	[31:0]							A_CPU;
 	input									Rdy_Low;
@@ -70,7 +71,8 @@ module cache(
 	wire	[`Cache_Block_Size-1:0]			Data_In;
 	
 	wire									Hit;
-	wire	[`En_Byte_Width-1:0]			En_Byte;
+	reg    	[`En_Byte_Width-1:0]			En_Byte;
+	reg    [`Memory_Block_Size-1:0]        Data_Out;
 	
 	
 	
@@ -81,28 +83,28 @@ module cache(
 	assign	A_Low_Port0 = A_CPU[31:(32-`Tag_Width-`Index_Width)];
 	
 	/*******************用来选择传入CACHE的数据*************************/
-	MUX2	_mux_Word2(
+	mux_Word2 _MUX2_0(
 			.d0(DI_CPU),
 			.d1(DI_Low[31:0]),
 			.s(Wn[0]),
 			.y(Word0_To_Cache)
 			);
 			
-	MUX2	_mux_Word2(
+	mux_Word2 _MUX2_1(
 			.d0(DI_CPU),
 			.d1(DI_Low[63:32]),
 			.s(Wn[1]),
 			.y(Word1_To_Cache)
 			);
 	
-	MUX2	_mux_Word2(
+	mux_Word2 _MUX2_2(
 			.d0(DI_CPU),
 			.d1(DI_Low[95:64]),
 			.s(Wn[2]),
 			.y(Word2_To_Cache)
 			);
 	
-	MUX2	_mux_Word2(
+	mux_Word2 _MUX2_3(
 			.d0(DI_CPU),
 			.d1(DI_Low[127:96]),
 			.s(Wn[3]),
@@ -139,7 +141,7 @@ module cache(
 	
 	/************************cacheBlock*******************************/
 	
-	CacheBlock  _cacheBlock(
+	cacheBlock _CacheBlock(
 			.clk(clk),
 			.En_Word(En_Word),				//Block块内的字使能信号，用来判断选择哪个字
 			.En_Byte(En_Byte),				//Block块内的字节使能信号，用来实现半字或字节操作。
@@ -161,7 +163,7 @@ module cache(
 	
 	
 	/************************cache controller****************************/
-	Cache_Controller  _cache_controller(
+	 cache_controller _Cache_Controller(
 			//input 
 			.clk(clk),
 			.rst(rst),
@@ -185,7 +187,7 @@ module cache(
 	
 	
 	/**********************用4选1数据选择器选择到DO_CPU的数据***************/
-	MUX4  _mux_Word4(
+	mux_Word4  _MUX4(
 			.d0(Data_Out[31:0]), 
 			.d1(Data_Out[63:32]), 
 			.d2(Data_Out[95:64]), 
@@ -198,7 +200,7 @@ module cache(
 	
 	assign A_Low_Port1 = {Tag_Out,Index};
 	
-	MUX2_ASEL _mux_Word2(
+	mux_Word2 _MUX2_ASEL(
 			.d0(A_Low_Port0),
 			.d1(A_Low_Port1),
 			.s(ASel),

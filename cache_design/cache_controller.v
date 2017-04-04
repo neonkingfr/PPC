@@ -1,3 +1,5 @@
+`include "data_def.v"
+
 /*
 ** cache_controller的基本信息：
 **    (1)采用有限状态机机制，分为INIT、TAG、MB、WB四个状态
@@ -38,6 +40,8 @@ module cache_controller(
 	output								Wr;
 	output								ASel;
 	
+	reg   [`En_Word_Width-1:0]		     En_Word;
+	reg   [`Wn_Width-1:0]				 Wn;
 /******************************FSM*********************************/
 	parameter INIT = 2'b00;
 	parameter TAG  = 2'b01;
@@ -102,7 +106,7 @@ module cache_controller(
 		
 		MB: begin
 			if (Rdy_Low)
-				nextstate = TAG
+				nextstate = TAG;
 			else
 				nextstate = MB;
 		end
@@ -132,32 +136,31 @@ module cache_controller(
 		if(state == TAG) begin
 			case(Word_Select)
 			Word_Select_0:begin
-				assign En_Word = En_Word_0;
+				 En_Word = En_Word_0;
 			end
 			
 			Word_Select_1:begin
-			
-				assign En_Word = En_Word_1;
+				 En_Word = En_Word_1;
 			end
 			
 			Word_Select_2:begin
-				assign En_Word = En_Word_2;
+				 En_Word = En_Word_2;
 			end
 			
 			Word_Select_3:begin
-				assign En_Word = En_Word_3;
+				 En_Word = En_Word_3;
 			end
 			
 			default:begin
-				assign En_Word = En_Word_0;
+				 En_Word = En_Word_0;
 			end
 			endcase
 		end 
 		else if (state == MB)begin
-			assign En_Word = En_Word_MB;
+			 En_Word = En_Word_MB;
 		end
 		else 
-			assign En_Word = En_Word_default;
+			 En_Word = En_Word_default;
 	end //end always
 		
 		
@@ -167,38 +170,38 @@ module cache_controller(
 	**************************************************************/
 	always @(*) begin
 		if(state == TAG) begin
-			assign Wn = Wn_TAG;
+			 Wn = Wn_TAG;
 		end
 		else if(state == MB)begin
 			if(Wr_CPU) begin
 				case(Word_Select)
 				Word_Select_0:begin
-					assign Wn = Wn_0;
+					 Wn = Wn_0;
 				end
 			
 				Word_Select_1:begin
-					assign Wn = Wn_1;
+					 Wn = Wn_1;
 				end
 			
 				Word_Select_2:begin
-					assign Wn = Wn_2;
+					 Wn = Wn_2;
 				end
 			
 				Word_Select_3:begin
-					assign Wn = Wn_3;
+					 Wn = Wn_3;
 				end
 			
 				default:begin
-					assign Wn = Wn_0;
+					 Wn = Wn_0;
 				end
 				endcase
 			end
 			else begin
-				assign Wn = Wn_MB_Read;
+				 Wn = Wn_MB_Read;
 			end
 		end
 		else begin
-			assign Wn = Wn_default;
+			 Wn = Wn_default;
 		end
 	end //end always
 			
