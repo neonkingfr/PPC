@@ -1,7 +1,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
-// Engineer: 
+// Engineer: Master he
 // 
 // Create Date:    12:32:15 11/17/2016 
 // Design Name: 
@@ -60,4 +60,12 @@
 //En_Byte字段是字节使能字段，
 `define En_Byte_Width 4
 
+//word instruction
+`define Word_Instruction 2'b00
+
+//half word instruction
+`define Half_Instruction 2'b01
+
+//Byte instruction
+`define Byte_Instruction 2'b10
 

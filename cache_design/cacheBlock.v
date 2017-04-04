@@ -13,7 +13,7 @@ module cacheBlock(
 			Valid_Out,						//从Block中读出的valid位，用来检测是否命中
 			Tag_Out,						//从Block中读出的Tag字段，用于检测是否命中
 			Data_Out,						//从Block中读出的数据，用于传回CPU或写入下一级的Memory
-			Rdy_Low							//当下一级Memory完成对Cache Block的写操作后，Rdy_Low
+			//Rdy_Low							//当下一级Memory完成对Cache Block的写操作后，Rdy_Low
 		);
 		
 		input								clk;
@@ -30,7 +30,7 @@ module cacheBlock(
 		output								Valid_Out;
 		output	[`Tag_Width-1:0]			Tag_Out;
 		output	[`Cache_Block_Size-1:0]		Data_Out;
-		output								Rdy_Low;
+		//output								Rdy_Low;
 		
 		
 		wire	[15:0]						wea_data;

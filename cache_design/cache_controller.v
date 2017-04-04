@@ -13,7 +13,7 @@ module cache_controller(
 			//output
 			Rdy_CPU,
 			Req_Low,Wr_Low,
-			Wn,ValidNew,DirtyNew,En_Word,En_Byte,Wr,
+			Wn,ValidNew,DirtyNew,En_Word,Wr,
 			ASel
 			);
 		
@@ -25,6 +25,7 @@ module cache_controller(
 	input								Dirty;
 	input								Hit;
 	input	[`Word_Select_Width-1:0]	Word_Select;
+	//input 	[`Byte_Select_Width-1:0]	Byte_Select;
 	
 	output								Rdy_CPU;
 	output								Req_Low;
@@ -33,7 +34,7 @@ module cache_controller(
 	output								ValidNew;
 	output								DirtyNew;
 	output	[`En_Word_Width-1:0]		En_Word;
-	output	[`En_Byte_Width-1:0]		En_Byte;
+	//output	[`En_Byte_Width-1:0]		En_Byte;
 	output								Wr;
 	output								ASel;
 	
@@ -54,6 +55,7 @@ module cache_controller(
 	parameter En_Word_3 = 4'b1000;
 	parameter En_Word_MB =4'b1111;
 	parameter En_Word_default = 4'b0000;
+	
 	
 	parameter Wn_0 = 4'b1110;
 	parameter Wn_1 = 4'b1101;
@@ -134,6 +136,7 @@ module cache_controller(
 			end
 			
 			Word_Select_1:begin
+			
 				assign En_Word = En_Word_1;
 			end
 			
@@ -222,22 +225,26 @@ module cache_controller(
 	/*******************Rdy_CPU信号***************************
 		(1)表明可以返回Cache中的值给CPU
 	*************************************************************/
-	？？？在MB阶段就返回Rdy_Low,同时转向TAG状态，Rdy_Low继续有效，
+	/*？？？在MB阶段就返回Rdy_Low,同时转向TAG状态，Rdy_Low继续有效，
 	那么问题来了，当产生Rdy_Low信号后，并不能马上读取Cache中的数据。
-	assign Rdy_CPU = (state == TAG) || ((state==MB) && Rdy_Low);
+	*/
+	
+	assign Rdy_CPU = (state == TAG);
+	//assign Rdy_CPU = (state == TAG) || ((state==MB) && Rdy_Low);
 	
 	
 	/*******************Req_Low信号***************************
 		(1)需要向Memory回写数据或从Memory中获取数据时置位
 	*************************************************************/
-	？？？
+
 	assign Req_Low = (state == WB || state == MB);
 	
 	/*******************Wr_Low信号***************************
 		(1)需要向Memory回写数据时置位
 	*************************************************************/
-	？？？
 	assign Wr_Low = (state == WB);
+
+endmodule
 	
 
 	
