@@ -53,7 +53,8 @@ module cache(
 	output	[31:0]							DO_CPU;
 	
 	//output to Memory
-	output	[`Width_of_A_Low-1:0]			A_Low;
+	//output	[`Width_of_A_Low-1:0]			A_Low;
+	output	[31:0]			               A_Low;
 	output	[`Memory_Block_Size-1:0]		DO_Low;
 	
 	
@@ -61,7 +62,8 @@ module cache(
 	wire 	[`Index_Width-1:0]				Index;
 	wire	[`Word_Select_Width-1:0]		Word_Select;
 	wire	[`Width_of_A_Low-1:0]			A_Low_Port0;	//来自EA的A_Low: Tag+Index
-	wire	[`Width_of_A_Low-1:0]			A_Low_Port1;	//Cache的Tag字段 + EA的Index字段
+	//wire	[`Width_of_A_Low-1:0]			A_Low_Port1;	//Cache的Tag字段 + EA的Index字段
+	wire	[31:0]			                 A_Low_Port1;
 	wire	[`Wn_Width-1:0]					Wn;				//Mux的选择信号，决定传入Cache block的数据是来自CPU还是下一级的Memory
 	
 	wire	[31:0]							Word0_To_Cache;
@@ -72,7 +74,7 @@ module cache(
 	
 	wire									Hit;
 	reg    	[`En_Byte_Width-1:0]			En_Byte;
-	reg    [`Memory_Block_Size-1:0]        Data_Out;
+	wire    [`Memory_Block_Size-1:0]        Data_Out;
 	
 	
 	
@@ -136,11 +138,12 @@ module cache(
 				En_Byte = 4'b1000;
 			end
 		else
-			En_Byte = 4'bxxxx;
+			En_Byte = 4'b0000;
 	end //end always
 	
 	/************************cacheBlock*******************************/
-	
+	wire   [`En_Word_Width-1:0]     En_Word;   
+	wire   [`Tag_Width-1:0]         Tag_Out;                     
 	cacheBlock _CacheBlock(
 			.clk(clk),
 			.En_Word(En_Word),				//Block块内的字使能信号，用来判断选择哪个字
@@ -198,14 +201,22 @@ module cache(
 		
 	/*********************用2选1选择器选择传入下一级的地址******************/
 	
-	assign A_Low_Port1 = {Tag_Out,Index};
-	
-	mux_Word2 _MUX2_ASEL(
+	//assign A_Low_Port1 = {Tag_Out,Index};
+	assign    A_Low_Port1 = {Tag_Out,Index,A_CPU[3:0]};
+	/*
+	mux_Word2_28 _MUX2_ASEL(
 			.d0(A_Low_Port0),
 			.d1(A_Low_Port1),
 			.s(ASel),
 			.y(A_Low)
 		);
+	*/
+	mux_Word2 _MUX2_ASEL32(
+	       .d0(A_CPU),
+           .d1(A_Low_Port1),
+           .s(ASel),
+           .y(A_Low)
+        );
 		
 	/********************传入到下一级Memory的数据***************************/
 	

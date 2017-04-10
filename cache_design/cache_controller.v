@@ -42,6 +42,8 @@ module cache_controller(
 	
 	reg   [`En_Word_Width-1:0]		     En_Word;
 	reg   [`Wn_Width-1:0]				 Wn;
+	
+                        
 /******************************FSM*********************************/
 	parameter INIT = 2'b00;
 	parameter TAG  = 2'b01;
@@ -72,7 +74,7 @@ module cache_controller(
 	reg [1:0] state;
 	reg [1:0] nextstate;
 	
-	always @(posedge clk or posedge rst) begin
+	always @(posedge clk ) begin
 		if (rst) begin
 			state <= INIT;
 		end
@@ -82,7 +84,7 @@ module cache_controller(
 	end // end always
 	
 	//状态机状态迁移
-	always @( posedge clk ) begin
+	always @( * ) begin
 		case (state)
 		INIT: begin
 			nextstate = TAG;
@@ -125,6 +127,7 @@ module cache_controller(
 		(2)在MB状态下，来自下一级Memory的数据已经准备好
 	*************************************************************/
 	assign Wr = ((state==TAG) && Wr_CPU) || (state==MB && Rdy_Low && Wr_CPU);
+	//assign Wr = ((state==TAG) && Wr_CPU) || (state==MB && Rdy_Low && Wr_CPU);
 	
 	
 	/*******************4位字使能En_Word****************************
@@ -222,7 +225,7 @@ module cache_controller(
 		(2)默认是A_CPU[31:4],否则为{Tag_Cache,A_CPU[11:4]}
 		(3)在WB状态下有效，表示输出该Cache块的主存地址
 	*************************************************************/
-	assign A_Sel = (state == WB);
+	assign ASel = (state == WB);
 	
 	
 	/*******************Rdy_CPU信号***************************
@@ -232,8 +235,10 @@ module cache_controller(
 	那么问题来了，当产生Rdy_Low信号后，并不能马上读取Cache中的数据。
 	*/
 	
-	assign Rdy_CPU = (state == TAG);
+
+	assign Rdy_CPU = (state == TAG && Hit == 1 );
 	//assign Rdy_CPU = (state == TAG) || ((state==MB) && Rdy_Low);
+	
 	
 	
 	/*******************Req_Low信号***************************
