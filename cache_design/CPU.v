@@ -57,7 +57,7 @@ module CPU(clk,rst,
            end
          end 
          
-         always @(Ready_Cache) begin
+         always @(clk) begin
            if(Ready_Cache == 1) begin
                 A_CPU = A_CPU + 1;
                 data_out = data_out + 1;

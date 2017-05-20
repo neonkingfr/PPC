@@ -16,8 +16,17 @@ module memory(	clk,
 		
 		reg		[15:0]						wea;
 		reg                                 Rdy_Low_temp;
-		reg                                 Rdy_Low;
-		
+		//reg                                 Rdy_Low;
+	
+	  
+	   blockRam_memory U_memory(
+                    .clk(clk),
+                    .ena(1'b1),
+                    .wea(wea),
+                    .addra(addr),
+                    .dina(din),
+                    .douta(dout)
+                );
 	
 		always @(posedge clk) begin
 			if(Wr)	
@@ -26,6 +35,11 @@ module memory(	clk,
 				wea = 16'h0000;
 		end //end always
 		
+		
+		
+		
+		
+		/*
 		Memory _memory (
 			.clka(clk),    // input wire clka
 			.wea(wea),      // input wire [15 : 0] wea
@@ -33,10 +47,11 @@ module memory(	clk,
 			.dina(din),    // input wire [127 : 0] dina
 			.douta(dout)  // output wire [127 : 0] douta
 		);
+		*/
 	
-	   //assign Rdy_Low  =  Req_Low; 
-		always @(posedge clk) begin 
+	    assign Rdy_Low  =  Req_Low; 
+//		always @(posedge clk) begin 
 		 
-		 Rdy_Low  <=  Req_Low; 
-		end
+//		 Rdy_Low  <=  Req_Low; 
+//		end
 endmodule

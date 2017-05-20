@@ -211,13 +211,13 @@ module cache_controller(
 	/*******************ValidNew信号***************************
 		(1)置位cache block是否有效
 	*************************************************************/
-	assign ValidNew = (state == TAG) || (state == MB);
+	assign ValidNew = (state == TAG && Hit  && Wr_CPU) || (state == MB);
 	
 	
 	/*******************DirtyNew信号***************************
 		(1)表明Cache Block是否被修改
 	*************************************************************/
-	assign DirtyNew = (state == TAG) || (state==MB && Wr_CPU);
+	assign DirtyNew = (state == TAG && Hit && Wr_CPU) || (state==MB && Wr_CPU);
 	
 	
 	/*******************ASel信号***************************
@@ -236,7 +236,7 @@ module cache_controller(
 	*/
 	
 
-	assign Rdy_CPU = (state == TAG && Hit == 1 );
+	assign Rdy_CPU = (state == TAG && Hit == 1 ) ;
 	//assign Rdy_CPU = (state == TAG) || ((state==MB) && Rdy_Low);
 	
 	

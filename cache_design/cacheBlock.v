@@ -152,6 +152,22 @@ module cacheBlock(
 //////////////////////////////////////////////////////////////////////
 //block_ram0:用来实现Cache Block，存放实际的数据
 //////////////////////////////////////////////////////////////////////	
+		
+		blockRam_data U_Block_RAM_DATA(
+				.clk(clk),
+				.ena(1'b1),
+				.wea(wea_data),
+				.addra(Index),
+				.dina(Data_In),
+				.douta(Data_Out)
+		);
+		
+		
+		
+		/************************************************************/
+		//使用IP核
+		//***********************************************************/
+		/*
 		blk_mem_gen_0 U_Block_RAM_DATA(
 								.clka(clk), 		// input 				clka
 								.ena(1'b1), 		// input 				ena
@@ -160,7 +176,7 @@ module cacheBlock(
 								.dina(Data_In), 	// input 	[127:0] 	dina
 								.douta(Data_Out) 	// output 	[127:0] 	douta
 							);
-							
+		*/					
 //////////////////////////////////////////////////////////////////////
 //block_ram1:用来保存TAG、有效位和脏位
 //////////////////////////////////////////////////////////////////////	
@@ -176,6 +192,17 @@ module cacheBlock(
 				wea_flag = 3'b000;
 		end //end always
 		
+		
+		
+		blockRam_flag U_Block_RAM_FLAG(
+				.clk(clk),
+				.ena(1'b1),
+				.wea(wea_flag),
+				.addra(Index),
+				.dina(data_flag),
+				.douta(data_flag_out)
+		);
+		/*
 		blk_mem_gen_1 U_Block_RAM_FLAG (
 								.clka(clk), 		// input 				clka
 								.ena(1'b1), 		// input 				ena
@@ -184,7 +211,7 @@ module cacheBlock(
 								.dina(data_flag), 	// input 	[23:0] 		dina
 								.douta(data_flag_out) 	// output 	[23:0] 		douta
 							);
-							
+		*/				
 		assign	Tag_Out = data_flag_out[`Tag_Width-1:0];
 		assign	Valid_Out = data_flag_out[`Tag_Width];
 		assign 	Dirty_Out = data_flag_out[`Tag_Width+1];
